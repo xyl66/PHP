@@ -21,4 +21,13 @@ function get_user_urls($username){
 	}
 	return  $url_array;
 } 
+function delete_bm($user,$url){
+	//删除书签
+	$conn=db_connect();
+	$sql="delete from bookmark where username='".$user."' and bm_url='".$url."'";
+	if(!$conn->query($sql)){
+		throw new Exception('Book could not be delete');
+	}
+	return true;
+}
 ?>

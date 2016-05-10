@@ -31,18 +31,25 @@ function login($username,$password)
 	//else throw exception
 	//connect to db
 	$conn=db_connect();
-	$sql="select * from user where username='".$username."'and passwd=sha1('".$password."')";
-	$result=$conn->query($sql);
+	$sql="select * from user where username=?";//sql 参数化防止sql注入
+	$stmt=$conn->prepare($sql);
+	$stmt->bind_param('s', $username);
+	$stmt->execute();
+	$result=$stmt->get_result();
 	if(!$result)
 	{
-		echo $sql;
 		throw new Exception('Could not log you in.');
 	}	
 	if($result->num_rows>0){
-		return true;
+		$row=$result->fetch_assoc();
+		echo $row["passwd"];
+		if($row["passwd"]==sha1($password))
+			return true;
+		else 
+			throw new Exception('PassWord Erro.');
 	}
 	else {
-		throw new Exception('Could not log you in.');
+		throw new Exception('No User.');
 	}
 }
 function check_valid_user(){
